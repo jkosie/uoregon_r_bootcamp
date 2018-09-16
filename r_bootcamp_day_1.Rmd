@@ -1,0 +1,506 @@
+---
+title: "Introduction to R"
+author: "Jessica Kosie & Mike Frank"
+date: "6/24/2018"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+# Goals 
+
+By the end of this tutorial, you will know:
+
++ Basic `R` usage (using `R` as a calculator, creating variables, indexing vectors)
++ How to read in and examine data
++ How to get values out of the rows and columns in your data
++ What a pipe is and how to use pipes to chain together `tidyverse` verbs
++ How to create useful summaries of your data using tidyverse.
+
+The best way to do this tutorial is to walk through it slowly, executing each line and trying to understand what it does. You can execute a whole chunk at a time by hitting CMD+option+C (on a mac), and execute a single line by hitting CMD+enter (again on a mac). 
+
+# Basic R Use
+
+R can simply be used as a calculator.
+
+```{r}
+# Basic arithmetic
+2+3
+2*3
+10/2
+4^2
+
+# Follows order of operations (PEMDAS)
+(2^3)+4*(5/3)
+```
+
+These values aren't stored anywhere though. 
+
+To keep them in memory, we need to assign them to a variable. 
+
+```{r}
+# Create a variable called x, that is assigned the number 8. 
+x <- 8 
+x = 8
+
+# What value did I assign to x?
+x
+
+# Can also assign a range of values
+x <- 1:5 #x is now a vector of 1, 2, 3, 4, 5
+
+# note that x is no longer 8, it take on whatever the most recent assignment was
+
+# We can also assign a vector of values this way
+x <- c(2, 8, 1, 9)
+```
+
+Vectors are just 1-dimensional lists of numbers.
+
+```{r}
+#let's get the numbers 1 thru 10 by ones 
+1:10
+
+#sequence of numbers, 1 thru 10, by 2
+seq(from = 1, to = 10, by = 2) #can say "from", "to", and "by=", but they're not necessary
+
+#sequence of 11 equally spaced numbers between 0 and 1
+seq(from = 0, to = 1, length.out=11) 
+```
+
+> **Exercise.** Create a variable called x that is assigned the number 5. Create a variable called y that is a sequence of numbers from 5 to 25, by 5. Multiply x and y. What happens? 
+
+```{r}
+x <- 5
+y <- seq(from = 5, to = 25, by = 5)
+x*y
+
+x <- c(5,10)
+
+```
+
+
+## Functions
+
+`seq` that we used above is a **function**. Everything you typically want to do in statistical programming uses functions. `mean` is another good example. `mean` takes one **argument**, a numeric vector. We are going to **apply** this function to a new vector.
+
+```{r}
+z <- 0:20
+mean(z)
+
+# now, let's get the mean of this vector:
+q <- c(2, 8, 6, NA, 4, 8)
+
+mean(q)
+
+# is that the answer you'd expect? let's get some information about the function `mean`
+?mean
+
+# we need to add an additional argument to tell the function that we want to ignore NAs (the default for this argument is FALSE, that's why NAs weren't ignored above)
+mean(q, na.rm = TRUE)
+```
+
+> **Exercise.** R has a function called `rnorm` that will allow you to get a random sample of numbers drawn from a normal distribtuion. Get a sample of 5 numbers with a mean of 0 and a standard deviation of 0.5.  
+
+```{r}
+# Hint:
+?rnorm
+
+x <- rnorm(5, sd = 0.5)
+
+```
+
+Creating and indexing matrices
+
+```{r}
+x <- matrix(c(11,12,13,21,22,23), byrow=TRUE,nrow=2) #put into a matrix by row
+x1 <- matrix(c(11,12,13,21,22,23), byrow=FALSE,nrow=2) #put into a matrix by column
+
+#indexing matrices (getting the value that's in a particular row/column)
+
+# x[r,c] would give you the element in row r, column c of the matrix
+
+x[2,3] #gives you the element in row 2 column 3 of matrix x (defined above)
+x[] #all rows, all columns - could have just typed x
+x[1, ] #first row, all columns
+x[ ,3] #all rows, third column
+x[1,3] #first row, third column
+
+y <- x[1,2] #assign the value in the 1st row 2nd column to a new variable
+```
+
+## Reading data into R
+
+First, you'll need to tell R where to look for the data. To do this, you will set your working directory. 
+
+For this tutorial, your working directory should be wherever you downloaded the materials. I downloaded them to my desktop.
+
+I like to do this using RStudio, via the graphical interface on the top:
+
+Session > Set Working Directory > Set Working Directory to Source File Location
+
+That will put you in the right location. 
+
+```{r}
+setwd("~/Documents/School/Conferences/ICIS_2018/openscience_tutorial")
+
+# take a look at what's in your directory
+# can also use the Files pane 
+dir()
+
+# Now, let's read in the pragmatic_scales_data CSV file and save it as an object called ps_data
+ps_data <- read.csv("datasets/pragmatic_scales_data.csv", header = TRUE)
+```
+
+## Examining the data file
+
+We can simply look at the data frame. We can also get a summary of the data. (these are all **functions** too!)
+
+```{r}
+# Look at the first few rows of the data.
+head(ps_data)
+
+# Look at the final few rows of the data.
+tail(ps_data)
+
+# Get a summary of the data.
+summary(ps_data)
+```
+
+Some people like `View(ps_data)` - that shows an interactive "spreadsheet" view. 
+
+## Indexing a data frame.
+
+You can select entries in the data frame just like indexing a vector. [row, column]
+
+```{r}
+# Get the entry in row 3, column 4.
+ps_data[3, 4]
+
+# Get the entry in row 4 of the item column
+ps_data[4, "item"] <- "faces"
+```
+
+> ProTip: Many people use this kind of selection to modify individual entries, like if you just want to correct a single mistake at a paticular point in the data frame. Be careful if you do this, as there will be nothing in the code that tells you that `4` is the *right* element to fix, you'll just have to trust that you got that number right. 
+
+...or select an entire column using the $ operation.
+
+```{r}
+ps_data$condition
+```
+
+Create a new column from a current column(s).
+
+```{r}
+ps_data$new <- ps_data$age + ps_data$correct
+```
+
+We can apply functions to an entire column. For example, I can get the mean age for my entire sample.
+
+Note that I have to include the data file in this argument, if I just say mean(age) I'll get an error.
+
+```{r}
+mean(ps_data$age)
+```
+
+> **Exercise.** Let's center age. Create a new column called age_centered in which you center age by subtracting the mean age from the age column.
+
+```{r}
+ps_data$age_centered <- ps_data$age - mean(ps_data$age)
+
+```
+
+# Using the `tidyverse`
+
+  > tidyverse is a package that has to be installed and loaded before you can use any of its functions.
+  
+The functions we've been using so far have been in **base R** and don't require additional packages. To use the functions in the tidyverse packages the `tidyverse` package must first be installed and loaded. Tidyverse packages include tidyr, dplyr, ggplot2, and more - see here for more info: www.tidyverse.org.
+  
+If you haven't installed the package, you'll need to run this command once:
+
+`install.packages("tidyverse")`
+
+```{r}
+# Load the package (tell R that you want to use its functions)
+library("tidyverse")
+```
+
+We're going to reread the data now, using `read_csv`, which is the `tidyverse` version and works faster and better in a number of ways!
+
+```{r}
+ps_data <- read_csv("datasets/pragmatic_scales_data.csv")
+```
+
+
+## Pipes
+
+Pipes are a way to write strings of functions more easily. They bring the first argument of the function to the bedginning. So you can write:
+
+```{r}
+ps_data$age %>% mean()
+```
+
+That's not very useful yet, but when you start **nesting** functions, it gets better. 
+
+```{r}
+mean(unique(ps_data$age))
+ps_data$age %>% unique() %>% mean()
+ps_data$age %>% unique %>% mean
+```
+
+or 
+
+```{r}
+round(mean(unique(ps_data$age)), 
+      digits = 2)
+
+ps_data$age %>% unique %>% mean %>% round(digits = 2)
+
+# indenting makes things even easier to read
+ps_data$age %>%
+  unique %>% 
+  mean %>% 
+  round(digits = 2)
+```
+
+This can be super helpful for writing strings of functions so that they are readable and distinct. 
+
+> **Exercise.** Rewrite these commands using pipes and check that they do the same thing! (Or at least produce the same output). Unpiped version:
+
+```{r}
+# number of unique items
+length(unique(ps_data$item)) 
+```
+
+Piped version:
+
+```{r}
+ps_data$item %>%
+  unique %>% 
+    length
+
+```
+
+## Using `tidyverse` to explore and characterize the dataset
+
+We are going to manipulate these data using "verbs" from `dplyr`. I'll only teach four verbs, the most common in my workflow (but there are many other useful ones):
+
++ `filter` - remove rows by some logical condition
++ `mutate` - create new columns 
++ `group_by` - group the data into subsets by some column
++ `summarize` - apply some function over columns in each group  
+
+Inspect the various variables before you start any analysis. Earlier we used `summary` but TBH I don't find it useful. 
+
+```{r}
+summary(ps_data)
+```
+
+This output just feels overwhelming and uninformative. 
+
+You can look at each variable by itself:
+
+```{r}
+unique(ps_data$item)
+
+ps_data$subid %>%
+ unique 
+```
+
+Or use interactive tools like `View` or `DT::datatable` (which I really like).
+
+```{r}
+# this won't work unless you first do
+# install.packages("DT")
+DT::datatable(ps_data) 
+```
+
+> ProTip: What we're working with is called "tidy data" where each column is one measure, and each row is one observation. This is, by consensus, the best way to work with tabular data in R. It's actually where the name of `tidyverse` comes from. Check out [this paper](https://www.jstatsoft.org/article/view/v059i10) to learn more. BUT - if you normally work with "wide data", where each row is a subject and different trials are different columns (like what SPSS often does), you can get your data "tidy" using a package called `tidyr`, which is also part of the tidyverse. It's a little tricky so we're not teaching it today, but the verbs that it provides are `gather` and `spread`. 
+
+## Filtering & Mutating
+
+There are lots of reasons you might want to remove *rows* from your dataset, including getting rid of outliers, selecting subpopulations, etc. `filter` is a verb (function) that takes a data frame as its first argument, and then as its second takes the **condition** you want to filter on. 
+
+So if you wanted to look only at 2 and 3 year olds.
+
+```{r}
+ps_data %>%
+  filter(age > 2, age < 3)
+
+# filter(ps_data, age > 2 & age < 3)
+
+# ps_data %>%
+#   filter(age > 2, age < 3)
+```
+
+Note that we're going to be using pipes with functions over data frames here. The way this works is that:
+
++ `dplyr` verbs always take the data frame as their first argument, and
++ because pipes pull out the first argument, the data frame just gets passed through successive operations
++ so you can read a pipe chain as "take this data frame and first do this, then do this, then do that."
+
+This is essentially the huge insight of `dplyr`: you can chain verbs into readable and efficient sequences of operations over dataframes, provided 1) the verbs all have the same syntax (which they do) and 2) the data all have the same structure (which they do if they are tidy). 
+
+OK, so filtering:
+
+```{r}
+ps_data %>%
+  filter(age > 2, 
+         age < 3)
+
+```
+
+**Exercise.** Create a smaller datast with **only** the "faces" items in the "Label" condition.
+
+```{r}
+ps_data %>% 
+  filter(item == "faces",
+         condition == "Label")
+
+```
+
+> ProTip: You can think about `filter`ing as similar to "logical indexing", where you use a vector of `TRUE` and `FALSE`s to get a part of a dataset, for example, `ps_data[ps_data$items == "faces",]`. This command creates a logical vector `ps_data$items == "faces"` and uses it as a condition for filtering.
+
+There are also times when you want to add or remove *columns*. You might want to remove columns to simplify the dataset. If you wanted to do that, the verb is `select`. 
+
+```{r}
+ps_data %>%
+  select(subid, age, correct) 
+
+ps_data %>%
+  select(-condition) 
+
+ps_data %>%
+  select(1) 
+
+ps_data %>%
+  select(starts_with("co")) 
+
+# learn about this with ?select
+```
+
+Perhaps more useful is *adding columns*. You might do this perhaps to compute some kind of derived variable. `mutate` is the verb for these situations - it allows you to add a column. Let's add a discrete age group factor to our dataset.
+
+```{r}
+ps_data <- ps_data %>%
+  mutate(age_group = cut(age, 2:5, include.lowest = TRUE), 
+         foo = age * 7)
+
+head(ps_data)
+```
+
+Recoding.
+
+```{r}
+ps_data %>%
+  mutate(age_factor = factor(round(age)), 
+         age_factor_bob = age_factor) %>%
+  select(-age_factor)
+```
+
+
+## Standard psychological descriptives
+
+We typically describe datasets at the level of subjects, not trials. We need two verbs to get a summary at the level of subjects: `group_by` and `summarise` (kiwi spelling). Grouping alone doesn't do much.
+
+```{r}
+ps_data %>%
+  group_by(age_group) 
+```
+
+All it does is add a grouping marker. 
+
+What `summarise` does is to *apply a function* to a part of the dataset to create a new summary dataset. So we can apply the function `mean` to the dataset and get the grand mean. 
+
+```{r}
+## DO NOT DO THIS!!!
+# foo <- initialize_the_thing_being_bound()
+# for (i in 1:length(unique(ps_data$item))) {
+#   for (j in 1:length(unique(ps_data$condition))) {
+#     this_data <- ps_data[ps_data$item == unique(ps_data$item)[i] & 
+#                       ps_data$condition == unique(ps_data$condition)[n],]
+#     do_a_thing(this_data)
+#     bind_together_somehow(this_data)
+#   }
+# }
+
+ps_data %>%
+  summarise(correct = mean(correct))
+```
+
+Note the syntax here: `summarise` takes multiple  `new_column_name = function_to_be_applied_to_data(data_column)` entries in a list. Using this syntax, we can create more elaborate summary datasets also:
+
+```{r}
+ps_data %>%
+  summarise(correct = mean(correct), 
+            n_observations = length(subid))
+```
+
+Where these two verbs shine is in combination, though. Because `summarise` applies functions to columns in your *grouped data*, not just to the whole dataset!
+
+So we can group by age or condition or whatever else we want and then carry out the same procedure, and all of a sudden we are doing something extremely useful!
+
+```{r}
+ps_means_nosubgrouping <- ps_data %>%
+  group_by(age_group, condition) %>%
+  summarise(correct_mean = mean(correct),
+            correct_sd = sd(correct),
+            n_observations = length(subid))
+ps_means_nosubgrouping
+```
+
+> **Exercise.** One of the most important analytic workflows for psychological data is to take some function (e.g., the mean) *for each participant* and then look at grand means and variability *across participant means*. This analytic workflow requires grouping, summarising, and then grouping again and summarising again! Use `dplyr` to make the same table as above (`ps_means`) but with means computed across subject means, not across all data points. (The means will be pretty similar as this is a balanced design but in a case with lots of missing data, they will vary.) 
+
+```{r}
+ps_sub_means <- ps_data %>%
+  group_by(age_group, condition, subid) %>%
+  summarise(correct_mean = mean(correct), 
+            n_observations = length(subid))
+
+ps_means <- ps_sub_means %>%
+  group_by(age_group, condition) %>%
+  summarise(correct_sd = sd(correct_mean),
+            correct_cond_mean = mean(correct_mean),
+            n_subs = length(subid))
+
+```
+
+```{r}
+ps_means_method2 <- ps_data %>%
+  group_by(age_group, condition, subid) %>%
+  summarise(correct_mean = mean(correct)) %>%
+  group_by(age_group, condition) %>%
+  summarise(correct_sd = sd(correct_mean),
+            correct_cond_mean = mean(correct_mean),
+            n_subs = length(subid))
+```
+
+
+## Optional: $t$-test
+
+A classic 
+
+Get the subject means. 
+
+```{r}
+ps_sub_means <- ps_data %>%
+  group_by(age_group, subid, condition) %>%
+  summarise(correct = mean(correct), 
+            n_observations = length(subid))
+```
+
+Now do a t-test for all ages.
+
+```{r}
+t.test(ps_sub_means$correct[ps_sub_means$condition == "Label"],
+       ps_sub_means$correct[ps_sub_means$condition == "No Label"])
+```
+
+
+> **Exercise.** Do a t-test for just the 3-4 year olds. 
+
+```{r}
+
+```
+
