@@ -55,6 +55,12 @@ y <- 2
 
 y
 
+# And we can do things with these variables:
+x + y
+x * y
+
+z <- x * y
+
 # Can use any name you want! But...object names must start with a letter, and can only contain letters, numbers, "_" and "." So, there are different options.
 
 this_is_snake_case <- 8
@@ -251,7 +257,7 @@ set.seed(5678)
 sample(1:10, 3)
 
 # Can create a matrix of random numbers
-x <- matrix(runif(100), ncol=1) #100 row, 1 column vector of random numbers from a uniform dist.
+x <- matrix(runif(100), ncol=2) #100 row, 2 column vector of random numbers from a uniform dist.
 
 x <- rnorm(5) #5 numbers from a normal dist. w/ mean=0 SD=1
 
@@ -301,15 +307,12 @@ x <- seq(-pi,pi,.01)
 plot(sin(x))
 
 # Keep the plot open to overlay something else
-
 par(new=TRUE)
 
 # Plot another graph in a different color so we can easily see the two different graphs
-
 plot(cos(x), col="green")
 
 # Here's another way to do it
-
 lines(tan(x),col="blue") #puts things in same plot, but doesn't overlay
 
 # Get a different x
@@ -405,7 +408,7 @@ What is the relationship between yoga and stress?
 
 ```
 
-## 5. Reading data into R
+# 5. Reading data into R
 
 First, you'll need to tell R where to look for the data. To do this, you will set your working directory. 
 
@@ -489,7 +492,7 @@ Once you've read in that data file, reset your working directory to the `uoregon
 
 
 ```
-## 6. Indexing and modifying a data frame.
+# 6. Indexing and modifying a data frame.
 
 You can select entries in the data frame just like indexing a vector. [row, column]
 
@@ -550,7 +553,7 @@ We can apply functions to an entire column. For example, I can get the mean age 
 Note that I have to include the data file in this argument, if I just say mean(age) I'll get an error.
 
 ```{r}
-mean(age) # doesn't work!
+mean(age) # doesn't work! I don't  have anything in my environment called "age"
 
 mean(ps_data$age)
 ```
@@ -586,11 +589,15 @@ ps_data <- read_csv("pragmatic_scales_data.csv")
 ```
 
 
-## 7. Pipes
+# 7. Pipes
 
 Pipes are a way to write strings of functions more easily. They bring the first argument of the function to the beginning. So you can write:
 
 ```{r}
+mean(ps_data$age)
+
+# becomes...
+
 ps_data$age %>% mean()
 ```
 
@@ -628,7 +635,7 @@ Unpiped version: length(unique(ps_data$item))
 
 
 ```
-## 8. Quick Intro to Tidyverse
+# 8. Quick Intro to Tidyverse
 
 Using `tidyverse` to explore and characterize the dataset
 
