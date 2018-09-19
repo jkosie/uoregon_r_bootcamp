@@ -4,7 +4,7 @@ R Bootcamp University of Oregon, Summer 2018
 ## Credit:
 Content adapted from:
 
-[Tools for Open Science: Reproducible Data Analysis and Paper Writing in R Infancy 2018 (Michael C. Frank, Jessica E. Kosie, Elika Bergelson, Melissa Kline)](https://github.com/mcfrank/openscience_tutorial)
+[Tools for Open Science: Reproducible Data Analysis and Paper Writing in R (Infancy 2018 Pre-Conference; Michael C. Frank, Jessica E. Kosie, Elika Bergelson, Melissa Kline)](https://github.com/mcfrank/openscience_tutorial)
 
 [Michael C. Frank's Tidyverse Tutorial](https://github.com/mcfrank/tidyverse-tutorial)
 
