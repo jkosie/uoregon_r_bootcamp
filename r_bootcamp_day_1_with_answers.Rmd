@@ -1,0 +1,543 @@
+---
+title: "Introduction to R"
+author: "Jessica Kosie"
+date: "9/17/2018"
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
+  word_document:
+    toc: yes
+---
+
+# Goals 
+
+By the end of this tutorial, you will know:
+
++ Basic `R` usage (using `R` as a calculator, creating variables, indexing vectors)
++ How to read in and examine data
++ How to get values out of the rows and columns in your data
++ What a pipe is and how to use pipes to chain together `tidyverse` verbs
++ How to create useful summaries of your data using tidyverse
+
+The best way to do this tutorial is to walk through it slowly, executing each line and trying to understand what it does. You can execute a single line by placing your cursor somewhere in that line and hitting CMD+enter (again on a mac) and execute a whole chunk at a time by hitting CMD+option+C (on a mac). 
+
+# 1. Basic R Use
+
+R can simply be used as a calculator.
+
+```{r}
+# Basic arithmetic
+2+3
+2*3
+10/2
+4^2
+
+# Follows order of operations (PEMDAS)
+(2^3)+4*(5/3)
+```
+
+These values aren't stored anywhere though. 
+
+To keep them in memory, we need to assign them to a variable. 
+
+```{r}
+# Create a variable called x, that is assigned the number 8. 
+x <- 8 
+x = 8
+
+# What value did I assign to x?
+x
+
+# What about y?
+y
+
+# Need to assign something to y!
+y <- 2
+
+y
+
+
+# And we can do things with these variables:
+x + y
+x * y
+
+z <- x * y
+
+# Can use any name you want! But...object names must start with a letter, and can only contain letters, numbers, "_" and "." So, there are different options.
+
+this_is_snake_case <- 8
+thisIsCamelCase <- 8
+some.people.use.periods <- 8
+And_someTimes.People_doSTRANGEtHiNgS <- 8
+
+# Can also assign a range of values
+x <- 1:5 #x is now a vector of 1, 2, 3, 4, 5
+
+# Note that x is no longer 8, it take on whatever the most recent assignment was
+
+# We can also assign a vector of values this way
+x <- c(2, 8, 1, 9)
+```
+
+Vectors are just 1-dimensional lists of numbers.
+
+```{r}
+# Let's get the numbers 1 thru 10 by ones 
+1:10
+
+# Sequence of numbers, 1 thru 10, by 2
+seq(from = 1, to = 10, by = 2) #can say "from", "to", and "by=", but they're not necessary
+
+```
+
+> **Exercise 1a.** Create a variable called x that is assigned the number 8. Create a variable called y that is a sequence of numbers from 2 to 16, by 2. Add x and y. What happens? 
+
+```{r}
+x <- 8
+y <- seq(from = 2, to = 16, by = 2)
+x+y
+
+```
+
+> **Exercise 1b.** Create a variable called z that is a vector containing the numbers 5 and 10. Create a variable called q that is a sequence of numbers from 5 to 25, by 5. Multiply x and y. What happens? 
+
+```{r}
+x <- c(5, 10)
+y <- seq(from = 5, to = 25, by = 5)
+x*y
+
+# Note: TODO add warnings vs. errors in file w/ answers 
+
+```
+## 2. Functions
+
+`seq` that we used above is a **function**. Everything you typically want to do in statistical programming uses functions. Functions can take different **arguments**.
+
+For example, `sqrt` is a function that can take one numeric argument. We are going to **apply** the function `sqrt` to the value 16.
+```{r}
+sqrt(16)
+
+# I could have assigned 16 to a variable first:
+x <- 16
+
+# And then taken the square root of that variable:
+sqrt(x)
+
+```
+The function `sqrt` can also take a vector as the argument.
+```{r}
+# Create a vector:
+x <- 1:10
+
+# Get the square root of every number in that vector:
+sqrt(x)
+
+```
+Another good example is the function `mean`. `mean` takes one **argument**, a numeric vector. We are going to create a vector called `z` and **apply** this function to that vector.
+
+```{r}
+z <- 0:20
+mean(z)
+
+# Now, let's get the mean of this vector:
+q <- c(2, 8, 6, NA, 4, 8)
+
+q
+
+mean(q)
+
+# Is that the answer you'd expect? let's get some information about the function `mean`
+?mean
+
+# We need to add an additional argument to tell the function that we want to ignore NAs (the default for this argument is FALSE, that's why NAs weren't ignored above)
+mean(q, na.rm = TRUE)
+```
+
+> **Exercise 2a.** R has a function called `rnorm` that will allow you to get a random sample of numbers drawn from a normal distribtuion. Get a sample of 5 numbers with a mean of 0 and a standard deviation of 0.5.  
+
+```{r}
+# Hint:
+?rnorm
+
+x <- rnorm(5, sd = 0.5)
+```
+
+There are multiple ways to create arrays of number.
+
+```{r}
+# As before, we can get a sequence of numbers, 1 thru 10, by 2
+s <- seq(1,10,2) #can say "by=" before the 2, but it's not necessary
+
+# Sequence of 11 equally spaced numbers between 0 and 1
+s2 <- seq(0,1,length.out=11) 
+
+# Side note: what if I don't want these things in my environment any more?
+rm(x)
+rm(q)
+rm(s)
+
+# Remove everything
+rm(list=ls())
+
+# Can bind things together
+
+x <- 1:10
+y <- 11:20
+z <- c(x,y) #combines them into one vector
+z1 <- cbind(x,y) #combines them into two columns in a matrix
+z2 <- rbind(x,y) #combines them into two rows in a matrix
+
+```
+
+Speaking of matrices: Creating and indexing matrices
+
+```{r}
+x <- matrix(c(11,12,13,21,22,23), byrow=TRUE,nrow=2) #put into a matrix by row
+x1 <- matrix(c(11,12,13,21,22,23), byrow=FALSE,nrow=2) #put into a matrix by column
+
+# Indexing matrices (getting the value that's in a particular row/column)
+
+# x[r,c] would give you the element in row r, column c of the matrix
+
+x[2,3] #gives you the element in row 2 column 3 of matrix x (defined above)
+x[] #all rows, all columns - could have just typed x
+x[1, ] #first row, all columns
+x[ ,3] #all rows, third column
+x[1,3] #first row, third column
+
+y <- x[1,2] #assign the value in the 1st row 2nd column to a new variable
+```
+
+> **Exercise 2b.** Create a matrix with the following values:
+row 1: 10, 26, 32
+row 2: 4, 8, 16
+row 3: 9, 12, 10
+
+Save it to the variable my_matrix.
+
+```{r}
+
+my_matrix <- matrix(c(10, 26, 32, 4, 8, 16, 9, 12, 10), byrow = TRUE, nrow = 3)
+
+```
+
+> **Exercise 2c.** Use indexing (as described above) to pull out the value in row 1, column 3. What is this value? 
+
+```{r}
+
+my_matrix[1,3]
+
+```
+
+> **Exercise 2d.** Next, using indexing to pull out the value 16. (Hint: which row and column is it in?) Save it to the variable z.
+
+```{r}
+
+z <- my_matrix[2,3]
+
+```
+
+> **Exercise 2e.** Finally, save column 2 to a variable called col_2 and add this to z.
+
+```{r}
+
+col_2 <- my_matrix[,2]
+
+col_2 + z
+
+```
+
+## 3. Generating random numbers.
+
+```{r}
+
+# Previously we used `rnorm`, `runif` is similar, but it draws from a uniform distribution.
+
+runif(1) #generates 1 random number from a uniform distribution from 0 to 1 (as defaults)
+runif(2, min=3, max=5) #generates 2 random numbers from a uniform distribution from 3-5
+
+#can hit the up arrow and run this again and again - draw lots of samples of 2
+#can hit the up arrow and change things:
+#up arrow gives you this runif(2, min=3, max=5) if you haven't yet run the line, you can edit any of the values.
+
+# Sample gives whole numbers
+sample(1:10, 3) #without replacement
+sample(1:10, 3, replace=TRUE) #keep running this you might get a couple #s that are the same
+sample(1:10, 30, replace=TRUE) #more likely to get numbers that are the same since it's a bigger sample
+
+# Note that we'll get different numbers, unless we all set the same seed before we run the function
+set.seed(5678)
+sample(1:10, 3)
+
+# Can create a matrix of random numbers
+x <- matrix(runif(100), ncol=2) #100 row, 2 column vector of random numbers from a uniform dist.
+
+x <- rnorm(5) #5 numbers from a normal dist. w/ mean=0 SD=1
+
+# Can set parameters of the normal distribution
+x <- rnorm(1, mean=100, sd=15) #draw one number from normal dist. w/ mean=100, SD=15 (e.g., 1 IQ score)
+
+# We can also round that number
+round(x, 2)
+
+```
+
+> **Exercise 3a.** Set the seed to 8642 and create a matrix (with 10 rows and 20 columns) of 200 numbers randomly drawn from a normal distribution. Use the default mean and sd. Enter the numbers by row. Save this matrix to a variable (you can call it anything you'd like).  
+
+```{r}
+
+set.seed(8642)
+anything_you_like <- matrix(rnorm(200), ncol=20, byrow = TRUE) 
+
+```
+
+> **Exercise 3b.** Use indexing to get the value in row 2, column 17. Round this value to three decimal places.  
+
+```{r}
+
+x <- anything_you_like[2,17]
+round(x, 3)
+
+# or
+
+round(anything_you_like[2,17], 3)
+
+```
+
+# 4. Plotting in "Base R"
+
+```{r}
+# Get some data and plot it
+plot(sin(seq(-pi,pi,.01))) #plot the sin of every value in the sequence between -pi and pi
+
+# Plot 1 to 10
+plot(seq(1,10,1))
+
+# Plot that as a line
+plot(seq(1,10,1), type='l')
+
+# Plot that as a blue line
+plot(seq(1,10,1), type='l', col = "blue")
+
+# We can plot 2 graphs on the same plot
+
+# Get some data 
+x <- seq(-pi,pi,.01)
+
+# Create one plot
+plot(sin(x))
+
+# Keep the plot open to overlay something else
+par(new=TRUE)
+
+# Plot another graph in a different color so we can easily see the two different graphs
+plot(cos(x), col="green")
+
+# Here's another way to do it
+lines(tan(x),col="blue") #puts things in same plot, but doesn't overlay
+
+# Get a different x
+x <- rnorm(100, mean=100, sd=15) #100 values from normal dist. w/ mean=100, SD=15
+#can check mean and sd of our sample
+mean(x)
+sd(x)
+#pretty close to the parameters we set because the sample size is large 
+#probably wouldn't be as close if sample size was 5
+
+# Get a histogram of x
+hist(x)
+
+# Can do fancier stuff
+hist(x, breaks=20) # histogram of x with 20 bins
+hist(x, breaks=20, xlab="IQs", main="Histogram of IQs") #title and axes
+
+# Line graphs
+x <- seq(-3,3,.01)
+y <- seq(1,7,.01)
+
+# Can give values for the x and y axis
+plot(x,y)
+
+# Can do fancier stuff here as well
+plot(x, y, type = 'l', col = "purple", xlab = "X Axis", ylab = "Y Axis", main = "Graph of X and Y")
+
+# Now let's look at bar plots - get some categorical data
+x <- c(10,8,7,7,5)
+barplot(x,main="Some RTs", xlab="Group")
+
+# Label the bars
+barplot(x, main="Some RTs", xlab="Group", names.arg=c("One", "Two", "Three", "Four", "Five"))
+
+# Add some color
+barplot(x,main="Some RTs", xlab="Group", names.arg=c("One", "Two", "Three", "Four", "Five"), col=rainbow(5))
+
+# Which arguments did we use?
+?barplot
+
+# Add a legend (probably don't really need this here since bars are labeled...)
+legend("topright", c("One", "Two", "Three", "Four", "Five"), cex=0.6, bty="n", fill=rainbow(5))
+
+# What do these arguments mean
+?legend
+
+```
+
+# For simple plotting in Base R, I really like this website: https://www.harding.edu/fmccown/r/
+
+(below are some examples borrowed from this website)
+
+This site is nice, too, for understanding graphical parameters: https://www.statmethods.net/advgraphs/parameters.html
+
+```{r}
+# Compare cars and trucks
+cars <- c(1,3,6,4,9)
+trucks <- c(2,5,4,5,12)
+
+# Make a graph for cars. using points connected by a line, y axis ranges from 0 to 12.
+plot(cars, type='o', col="blue", ylim=c(0,12), ann=FALSE) 
+
+#ann=FALSE means that R shouldn't label the axes, asking it not to automatically label the y axis right now because it would just be labeled cars and we want to plot trucks, too.
+
+# Graph trucks on the same plot w/ a red dashed line and square points
+lines(trucks, type='o', pch=22, lty=2, col="red")
+
+# Add a title & labels for axes
+title(main="Autos",col.main="red",font.main=4, xlab="Count", ylab="Total")
+
+```
+
+> **Exercise 4a.** Let's create a graph comparing number of yoga classes taken in a week and stress level. 
+
+Create a variable called `yoga` containing the numbers 0, 1, 2, 3, 4, 5, 6, 7. 
+
+Create a second variable called `stress` containing the numbers 10, 8, 7, 4, 3, 2, 3, 8.  
+
+Create a plot with `yoga` on the x axis and `stress` on the y axis.   
+
+Make sure this is a line graph and make your line blue and dashed. 
+
+Label the x axis `Number of Yoga Classes`.
+
+Label the y axis `Stress Level`. Make sure the y axis ranges from 0 to 10.
+
+Title the graph `Relationship between Yoga and Stress`.
+
+What is the relationship between yoga and stress?
+```{r}
+
+yoga <- c(0, 1, 2, 3, 4, 5, 6, 7)
+
+stress <- c(10, 8, 7, 4, 3, 2, 3, 8)
+
+plot(yoga, stress, type = 'l', lty = 2, col = 'blue', ylim = c(0,10), xlab = 'Number of Yoga Classes', ylab = 'Stress Level', main = 'Relationship between Yoga and Stress')
+
+```
+
+## 5. Reading data into R
+
+First, you'll need to tell R where to look for the data. To do this, you will set your working directory. 
+
+For this tutorial, your working directory should be wherever you downloaded the materials. (They should be on your desktop.)
+
+```{r}
+
+# What is my current working directory?
+getwd()
+
+# How can I change my working directory?
+setwd("/Users/jessicakosie/Desktop/uoregon_r_bootcamp/")
+getwd()
+
+# What is in my working directory?
+dir()
+
+```
+
+You can also do this using RStudio, via the graphical interface on the top:
+
+Session > Set Working Directory > Choose Directory
+
+You can choose the folder you want to work in. The code for setting the working directory will populate in the console. You can then copy/paste this into your code if you'd like.
+
+```{r}
+# Now, let's read in the pragmatic_scales_data CSV file and save it as an object called ps_data
+ps_data <- read.csv("pragmatic_scales_data.csv", header = TRUE)
+
+```
+
+> ProTip: You can also read in data files generated by other programs like SPSS. There are often packages to help with this.
+
+Here's how you could read in this file if it were an SPSS file. (The code below won't work because the file is a .csv)
+```{r}
+# Uncomment the line below to install the `foreign` package
+# install.packages("foreign")
+#library(foreign)
+#ps_data_spss <- read.spss('pragmatic_scales_data.sav', to.data.frame = TRUE)
+
+```
+
+# Examining the data file
+
+You should now see the dataset in your environment.
+
+We can simply look at the data frame. We can also get a summary of the data. (these are all **functions** too!)
+
+```{r}
+# Look at the first few rows of the data.
+head(ps_data)
+
+# Look at the final few rows of the data.
+tail(ps_data)
+
+# You can also specify the number of rows you'd like to see
+head(ps_data, n = 10)
+tail(ps_data, n = 2)
+
+# Get a summary of the data.
+summary(ps_data)
+
+# You can also `View` data, which shows an interactive "spreadsheet" view. You can also get this by clicking on the dataset in the environment.
+View(ps_data)
+
+# Note the capital `V`
+view(ps_data) #this doesn't work!
+
+# We can also look at the structure of the data.
+str(ps_data)
+
+# I can get the column names of the data.
+colnames(ps_data)
+
+```
+
+> **Exercise 5a.** Move the file called `another_data_set.csv` from the `uoregon_r_bootcamp` folder on your desktop to a different folder on your computer. Re-set your working directory to that folder. Use `getwd()` to make sure you have the right directory. Read in this new dataset and name it anything you'd like. Use head/tail/summary/etc to check out this data set.
+
+Once you've read in that data file, reset your working directory to the `uoregon_r_bootcamp` folder on your desktop.
+```{r}
+
+# I moved the file to `Documents`
+
+setwd("/Users/jessicakosie/Documents")
+getwd()
+more_data <- read.csv("another_data_set.csv", header = T)
+
+setwd("/Users/jessicakosie/Desktop/uoregon_r_bootcamp/")
+getwd()
+
+```
+
+## Playing around with SWIRL
+
+```{r}
+
+# I highly recommend trying out the swirl package!
+
+install.packages("swirl") # give it time to install, if you're using R Studio you'll see a little 
+# stop sign in the top right corner of the console until it's finished installing.
+library(swirl)
+swirl()  # have fun! :)
+
+```
