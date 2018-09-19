@@ -172,7 +172,7 @@ mean(ps_data$age)
 
 # Using the `tidyverse`
 
-Content adapted from: https://github.com/mcfrank/tidyverse-tutorial
+Content adapted from: https://github.com/mcfrank/tidyverse-tutorial and https://github.com/jkosie/openscience_tutorial
 
   > tidyverse is a package that has to be installed and loaded before you can use any of its functions.
   
