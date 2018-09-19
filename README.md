@@ -12,9 +12,6 @@ Content adapted from:
 
 [Sara Weston's R Workshops](http://www.saraweston.com/r/)
 
-[ggplot2: Elegant Graphics for Data Analysis (ggplot2 book)](moderngraphics11.pbworks.com/f/ggplot2-Book09Wickham.pdf)
-Note: this link will download a copy of the book.
-
 ## Additional Resources:
 
 [RStudio Cheat Sheets](https://www.rstudio.com/resources/cheatsheets/)
@@ -27,5 +24,6 @@ R for Data Science (see above)
 
 [DataCamp](https://www.datacamp.com/)
 
-
+[ggplot2: Elegant Graphics for Data Analysis (ggplot2 book)](moderngraphics11.pbworks.com/f/ggplot2-Book09Wickham.pdf)
+Note: this link will download a copy of the book.
 
