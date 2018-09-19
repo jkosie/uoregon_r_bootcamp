@@ -8,7 +8,7 @@ Content adapted from:
 
 [Michael C .Frank's Tidyverse Tutorial](https://github.com/mcfrank/tidyverse-tutorial)
 
-[Hadley Wickman's R for Data Science](http://r4ds.had.co.nz/)
+[Hadley Wickham's R for Data Science](http://r4ds.had.co.nz/)
 
 [Sara Weston's R Workshops](http://www.saraweston.com/r/)
 
