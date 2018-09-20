@@ -1,5 +1,10 @@
 # uoregon_r_bootcamp
-R Bootcamp University of Oregon, Summer 2018
+R Bootcamp 
+University of Oregon Psychology Department
+Summer 2018
+
+## Instructor:
+Jessica E. Kosie
 
 ## Credit:
 Content adapted from:
