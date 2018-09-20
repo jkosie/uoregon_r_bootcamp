@@ -114,6 +114,7 @@ ps_data[4, "item"]
 ```
 
 > ProTip: Many people use this kind of selection to modify individual entries, like if you just want to correct a single mistake at a paticular point in the data frame. Be careful if you do this, as there will be nothing in the code that tells you that `4` is the *right* element to fix, you'll just have to trust that you got that number right. 
+
 ```{r}
 # For example:
 ps_data[4, "item"] <- "faces"
@@ -162,7 +163,6 @@ mean(age) # doesn't work! I don't  have anything in my environment called "age"
 
 mean(ps_data$age)
 ```
-
 > **Exercise 2a.** Let's center age. Create a new column called age_centered in which you center age by subtracting the mean age from the age column.
 
 ```{r}
@@ -325,7 +325,7 @@ ps_data %>%
 
 ```
 
-**Exercise 4a.** Create a smaller datast with **only** the "faces" items in the "Label" condition.
+> **Exercise 4a.** Create a smaller datast with **only** the "faces" items in the "Label" condition.
 
 ```{r}
 
@@ -390,7 +390,7 @@ ps_data <- ps_data %>%
 head(ps_data)
 ```
 
-**Exercise 5/6a.** Use tidyverse verbs to add a column called age_centered (age - mean(age)). Select only that new column and the subject IDs column. Do this WITHOUT re-saving your data file (i.e., these columns should show up in the console, but not be saved to ps_data). Hint: chain functions together using pipes!
+> **Exercise 5/6a.** Use tidyverse verbs to add a column called age_centered (age - mean(age)). Select only that new column and the subject IDs column. Do this WITHOUT re-saving your data file (i.e., these columns should show up in the console, but not be saved to ps_data). Hint: chain functions together using pipes!
 
 ```{r}
 
@@ -414,7 +414,7 @@ ps_data %>%
 
 ```
 
-**Exercise 7a.** Use `arrange` to find out the age of the **oldest** participant in the dataset.
+> **Exercise 7a.** Use `arrange` to find out the age of the **oldest** participant in the dataset.
 
 ```{r}
 
@@ -513,6 +513,7 @@ table4a %>%
 
 ```
 > **Exercise 9a.** `table4b` contains information about the `population` variable. Let's *gather* that table as well. Type `table4b` to check it out before gathering. Your resulting table should have columns for `country`, `year`, and `population`.
+
 ```{r}
 table4b #check it out
 
@@ -547,6 +548,7 @@ table2 %>%
   spread(key = type, value = count)
 ```
 > **Exercise 10a.** Let's play around with our ps_data. Make each `item` a unique variable. Use *spread* to reformat the data so that there is a unique column for each item. The values in each of the four `item` columns should indicate whether or not the subject got that particular item right or wrong (i.e., `correct` in ps_data). Hint: what is the *key*? What is the *value*? Do not save this as a new object.
+
 ```{r}
 
 
@@ -555,6 +557,7 @@ table2 %>%
 For this section we're going to use another dataset that is built into R. It is called `iris`. Let's start by making a scatter plot of the relationship between Sepal.Length and Petal.Length.
 
 Note: this is just the beginning! There are entire books on graphing in ggplot2! https://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/331924275X/ref=as_li_ss_tl?ie=UTF8&linkCode=sl1&tag=ggplot2-20&linkId=4b4de5146fdafd09b8035e8aa656f300
+
 ```{r}
 ?iris #first, let's learn about the dataset
 
@@ -566,7 +569,7 @@ plot(iris$Sepal.Length, iris$Petal.Length)
 ```
 Creation of a plot in ggplot2 begins with the function ggplot() which creates a coordinate system you can add data to. For example:
 ```{r}
-ggplot(iris)
+ggplot(data = iris)
 ```
 You then can add one or more layers to ggplot() to complete your graph. As above, we'll add a layer of points to our plot (creating a scatterplot). geom_point() is a *geom function*, each of which adds a different type of layer to a plot. Each *geom function* take a *mapping* argument that defines visual properties of the graph. 
 
@@ -587,6 +590,7 @@ ggplot(data = iris) +
 #ggplot assigned each level of *color* to each unique value of `Species`. This is called *scaling*.
 ```
 > **Exercise 11a.** Options for *aesthetics* include color, shape, size, and alpha. Create a scatter plot to visualize the relationship between `Sepal.Width` and `Petal.Width`. Add an aesthetic to visualize the effect of `Species`. Choose any aesthetic you'd like or play around with a few. What do they do? How might you use more than one aesthetic?
+
 ```{r}
 
 
@@ -635,6 +639,7 @@ ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Petal.Length)) +
   geom_smooth()
 ```
 > **Exercise 11b.** Plot the relationship between `Sepal.Width` and `Petal.Width`. As above, create lines overlaid on a scatter plot. For the points, use different colors for each `Species`. For the lines, use both different colors and line types for `Species`.
+
 ```{r}
 
 
@@ -668,6 +673,7 @@ ggplot(plot.data, aes(x=Species, y=mean, fill=Species)) +
   geom_bar(stat="identity")
 ```
 > **Exercise 11c.** Now, let's make a plot for ps_data. We want to visualize the mean `correct` for each `item` across each level of `condition`. Make sure the color of the bars represents the different `item`s. Instead of putting both levels of `condition` on the same plot, create two separate plots, one for each `condition`. Hint: use what you've learned so far about grouping and summarising; see *facet_wrap* above for help separating plots by `condition`!
+
 ```{r}
 
 
