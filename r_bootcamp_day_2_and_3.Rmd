@@ -16,7 +16,7 @@ By the end of this tutorial, you will know:
 + How to get values out of the rows and columns in your data
 + What a pipe is and how to use pipes to chain together `tidyverse` verbs
 + Using tidyverse "verbs" to modifiy and summarise data
-+ Intro to plotting in ggplot2 (more Friday)
++ Intro to plotting in ggplot2 
 
 
 The best way to do this tutorial is to walk through it slowly, executing each line and trying to understand what it does. You can execute a single line by placing your cursor somewhere in that line and hitting CMD+enter (again on a mac) and execute a whole chunk at a time by hitting CMD+option+C (on a mac). 
@@ -25,7 +25,7 @@ The best way to do this tutorial is to walk through it slowly, executing each li
 
 First, you'll need to tell R where to look for the data. To do this, you will set your working directory. 
 
-For this tutorial, your working directory should be wherever you downloaded the materials. (They should be on your desktop.)
+For this tutorial, your working directory should be wherever you downloaded the materials. 
 
 ```{r}
 
@@ -131,9 +131,11 @@ head(ps_data)
 
 # Change it back:
 colnames(ps_data)[2] <- "item"
+head(ps_data)
 
 # You can also select an entire column using the $ operation.
 ps_data$condition
+str(ps_data)
 
 # ...or ask for only the unique entries from that column
 unique(ps_data$condition)
@@ -148,7 +150,7 @@ table(ps_data$condition, ps_data$item)
 ps_data$new <- ps_data$age + ps_data$correct
 head(ps_data)
 
-# Adding age and correct together really doesn't make sense. Let's delete that column.
+# Adding `age` and `correct` together really doesn't make sense. Let's delete that column.
 ps_data$new <- NULL
 head(ps_data)
 
