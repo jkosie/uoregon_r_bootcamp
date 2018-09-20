@@ -21,13 +21,19 @@ Content adapted from:
 
 [RStudio Cheat Sheets](https://www.rstudio.com/resources/cheatsheets/)
 
-R for Data Science (see above)
+R for Data Science (see *Hadley Wickham* above)
 
 [Cookbook for R](http://www.cookbook-r.com/)
 
 [Quick-R](https://www.statmethods.net/)
 
 [DataCamp](https://www.datacamp.com/)
+
+[YaRrr! The Pirate's Guide to R](http://nathanieldphillips.com/thepiratesguidetor/)
+
+[R for Cats!](https://rforcats.net/)
+
+[HUGE list of R resources compiled by Paul van der Laken](https://paulvanderlaken.com/2017/08/10/r-resources-cheatsheets-tutorials-books/)
 
 [ggplot2: Elegant Graphics for Data Analysis (ggplot2 book)](moderngraphics11.pbworks.com/f/ggplot2-Book09Wickham.pdf)
 Note: this link will download a copy of the book.
