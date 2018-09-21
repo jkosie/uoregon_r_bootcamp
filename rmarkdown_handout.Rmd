@@ -17,7 +17,7 @@ opts_chunk$set(echo=TRUE,
 ```
 # Introduction
 
-This document is the beginning of a tutorial on using RMarkdown to mix prose and code together for creating reproducible scientific documents. This document is adapted from [a tutorial that Mike and Chris Hartgerink taught together at SIPS 2017](https://github.com/mcfrank/rmarkdown-workshop).
+This document is the beginning of a tutorial on using RMarkdown to mix prose and code together for creating reproducible scientific documents. This document is adapted from [a tutorial that Mike Frank and Chris Hartgerink taught together at SIPS 2017](https://github.com/mcfrank/rmarkdown-workshop).
 
 In short: RMarkdown allows you to create documents that are compiled with code, producing your next scientific paper.
 
@@ -70,7 +70,7 @@ For example, if you want to have the result of 48 times 35 in your text, you typ
 
 In the section above we introduced you to running code inside text, but often you need to take several steps in order to get to the result you need. And you don't want to do data cleaning in the text! This is why there are code chunks. A simple example is a code chunk loading packages. 
 
-First, insert a code chunk by going to `Code->Insert code chunk` or by pressing `CTRL+ALT+I`. Inside this code chunk you can then type for example, `library(ggplot2)` and create an object `x`. 
+First, insert a code chunk by going to `Code->Insert code chunk` or by pressing `CMD+OPTION+I` on a Mac or `CTRL+ALT+I` on a PC. Inside this code chunk you can then type for example, `library(ggplot2)` and create an object `x`. 
 
 ```{r}
 library(ggplot2)
@@ -100,20 +100,16 @@ The great thing about Markdown is that it works almost everywhere! Github, OSF, 
 
 ## Exercises
 
-Swap over to your new sample markdown.
-
-1. Outlining using headings is a really great way to keep things organized! Try making a bunch of headings (i.e., *first*, *second*, and *third level* as described above), and then recompiling your document. 
-2. Add a table of contents. This will involve going to the header of the document (the `YAML`), and adding some options to the `html document` bit. You want it to look like this (indentation must to be correct):
+1. Outlining using headings is a really great way to keep things organized! Try making a bunch of headings (i.e., *first*, *second*, and *third level* as described above) in your new markdown file, and then recompiling your document. 
+2. Add a table of contents. This will involve going to the header of the document (the `YAML`), and adding some options to the `word document` bit. You want it to look like this (indentation must be correct):
 
 ```yaml
 output: 
-  html_document:
+  word_document:
     toc: true
 ```
 
 Now recompile. Looks nice, right?^[Pro-tip: you can specify how deep the TOC should go by adding `toc_depth: 2` to go two levels deep]
-
-3. Try adding another option: `toc_float: true`. Recompile -- super cool. There are plenty more great output options that you can modify. [Here is a link to the documentation.](http://rmarkdown.rstudio.com/html_document_format.html)
 
 #  Graphs and Tables 
 
@@ -123,7 +119,6 @@ We're going to want more libraries loaded (for now we're loading them inline). I
 library(knitr)
 library(ggplot2)
 library(broom)
-library(devtools)
 ```
 ## Graphs
 
@@ -173,17 +168,20 @@ Of course, cleaning these up can take some work. For example, we'd need to renam
 We often need APA-formatted statistics. We can compute them first, and then print them inline.
 
 ```{r}
-ts <- with(mtcars,t.test(hp[cyl==4], hp[cyl==6]))
+ts <- t.test(mpg ~ am, data = mtcars)
 ```
 
-> There's a statistically-significant difference in horsepower for 4- and 6-cylinder cars  ($t(`r round(ts$parameter,2)`) = `r round(ts$statistic,2)`$, $p = `r round(ts$p.value,3)`$). 
+> There's a statistically-significant difference in miles per gallon for cars with automatic vs. manual transmissions ($t(`r round(ts$parameter,2)`) = `r round(ts$statistic,2)`$, $p = `r round(ts$p.value,3)`$). 
 
 To insert these stats inline I wrote e.g. `round(ts$parameter, 2)` inside an inline code block.^[APA would require omission of the leading zero. `papaja::printp()` will let you do that, see below.]
 
 Note that rounding can occasionally get you in trouble here, because it's very easy to have an output of $p = 0$ when in fact $p$ can never be exactly equal to 0. Nonetheless, this can help you prevent rounding errors and the wrath of `statcheck`.
 
-## Exercises
+## Exercise
 
 1. Using the `mtcars` dataset, insert a table and a graph of your choice into the document.^[If you're feeling uninspired, try `hist(mtcars$mpg)`.]
+```{r}
+
 
 ```
+[See the tutorial that Mike Frank and Chris Hartgerink taught together at SIPS 2017 for additional content!](https://github.com/mcfrank/rmarkdown-workshop)
