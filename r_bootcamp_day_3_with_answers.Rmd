@@ -1,0 +1,354 @@
+---
+title: "Introduction to R"
+author: "Jessica Kosie"
+date: "9/21/2018"
+output:
+  word_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float: yes
+---
+
+# Goals 
+
+By the end of this tutorial, you will know:
+
++ (review & continue) using tidyverse `verbs`
++ basics of graphing in ggplot2
++ basics of writing in RMarkdown (content in a separate document)
+
+The best way to do this tutorial is to walk through it slowly, executing each line and trying to understand what it does. You can execute a single line by placing your cursor somewhere in that line and hitting CMD+enter (again on a mac) and execute a whole chunk at a time by hitting CMD+option+C (on a mac). 
+
+First, set your working directory!
+
+# `tidyverse` review:
+  
+If you haven't installed the package, you'll need to run this command once:
+
+`install.packages("tidyverse")`
+
+```{r}
+# Load the package (tell R that you want to use its functions)
+library("tidyverse")
+```
+
+We're going to reread the data now, using `read_csv`, which is the `tidyverse` version and works faster and better in a number of ways!
+
+```{r}
+ps_data <- read_csv("pragmatic_scales_data.csv")
+```
+# 1. Pipes
+
+Pipes are a way to write strings of functions more easily. They bring the first argument of the function to the beginning. So you can write:
+
+```{r}
+mean(ps_data$age)
+
+# becomes...
+
+ps_data$age %>% mean()
+```
+
+That's not very useful yet, but when you start **nesting** functions, it gets better. 
+
+```{r}
+mean(unique(ps_data$age))
+
+ps_data$age %>% unique() %>% mean()
+
+ps_data$age %>% unique %>% mean
+```
+
+or 
+
+```{r}
+round(mean(unique(ps_data$age)), 
+      digits = 2)
+
+ps_data$age %>% unique %>% mean %>% round(digits = 2)
+
+# indenting makes things even easier to read
+ps_data$age %>%
+  unique %>% 
+  mean %>% 
+  round(digits = 2) 
+```
+## 2. Filtering 
+
+The verb `filter` can be used to remove *rows* from your dataset. You might do this to remove outliers or select a subpopulation. `filter` is a verb (function) that takes a data frame as its first argument, and then as its second takes the **condition** you want to filter on. 
+
+So if you wanted to look only at 2 and 3 year olds.
+
+```{r}
+ps_data %>%
+  filter(age > 2, age < 3) 
+```
+## 2. Selecting
+There are also times when you want to add or remove *columns*. You might want to remove columns to simplify the dataset. If you wanted to do that, the verb is `select`. 
+
+```{r}
+#get ONLY the subid, age, and correct columns 
+ps_data %>%
+  select(subid, age, correct) 
+```
+## 3. Mutating
+Perhaps more useful is *adding columns*. You might do this perhaps to compute some kind of derived variable. `mutate` is the verb for these situations - it allows you to add a column. Let's add a discrete age group factor to our dataset. 
+```{r}
+ps_data <- ps_data %>%
+  mutate(age_group = cut(age, 2:5, include.lowest = TRUE))
+
+head(ps_data)
+```
+## 4. Arranging
+Sometimes you might want to **sort** your data by the values in a particular column. For this, you'll use the verb `arrange`. Let's arrange our data by the `correct` column.
+
+```{r}
+ps_data %>% 
+  arrange(age) 
+
+ps_data %>% 
+  arrange(desc(age))
+```
+## 5. Grouping and Summarising
+
+We typically describe datasets at the level of subjects, not trials. We need two verbs to get a summary at the level of subjects: `group_by` and `summarise` (kiwi spelling). 
+```{r}
+#summarize without grouping
+ps_data %>%
+  summarise(correct_mean = mean(correct),
+            correct_sd = sd(correct),
+            n_observations = length(subid))
+
+#grouped by age_group and condition
+ps_data %>%
+  group_by(age_group, condition) %>%
+  summarise(correct_mean = mean(correct),
+            correct_sd = sd(correct),
+            n_observations = length(subid))
+```
+
+> **Exercise 5a.** One of the most important analytic workflows for psychological data is to take some function (e.g., the mean) *for each participant* and then look at grand means and variability *across participant means*. This analytic workflow requires grouping, summarising, and then grouping again and summarising again! First, create a table called `ps_sub_means` to get the mean `correct` for each `subid`. Hint: in addition to `subid`, group by `age_group` and `condition` in this summary to transfer those values to `ps_sub_means` (we'll use them in our next step). Next, create a table called `ps_means` where you use `ps_sub_means` as your data file and calculate the mean `correct` across `age_group` and `condition`.  
+
+```{r}
+ps_sub_means <- ps_data %>%
+  group_by(age_group, condition, subid) %>%
+  summarise(correct_mean = mean(correct), 
+            n_observations = length(subid))
+
+ps_means <- ps_sub_means %>%
+  group_by(age_group, condition) %>%
+  summarise(correct_sd = sd(correct_mean),
+            correct_cond_mean = mean(correct_mean),
+            n_subs = length(subid))
+```
+## NEW CONTENT:
+
+## Data tidying
+Credit: http://r4ds.had.co.nz/tidy-data.html#tidy-data-1
+
+The two key verbs in **data tidying** are `spread` and `gather`. Each of these verbs relies on a key value pair that contains a *key* that indicates *what* the information describes and a *value* that contains the actual information.
+
+"Password: 0123456789"" is a key value pair. 0123456789 is the *value*, and it is associated with the *key* Password.
+
+The `ps_data` we've been using is already *tidy*. Now, we'll look at some that are not! We'll use some datasets that are built into the tidyverse package. Each dataset has the same values of four variables, `country`, `year`, `population`, and `cases`, but each dataset organizes them in different ways.
+
+Recall the "rules" for tidy data:
++ Each variable must have its own column.
++ Each observation must have it's own row.
++ Each value must have its own cell.
+```{r}
+?table1 #let's learn about the datset
+table1 #this dataset is tidy!
+```
+## 6. Gathering & Joining Data
+A common problem is a dataset where some column names are not names of variables, but *values* of a variable. Check out `table4a`. The column names `1999` and `2000` are not variables in our data, instead they represent values of the `year` variable, and each row represents two observations, not one. We need to *gather* these columns into a new pair of variables.
+
+*gather* makes wide tables narrower and longer
+```{r}
+table4a
+```
+There are three questions we must answer:
+1. Which columns do we want to gather? A: `1999` and `2000`
+2. What is the name ofthe variable whose values form the column names (the *key*)? A: year
+3. What is the name of the variable that is spread out over the cells (the *value*)? A: cases
+
+We'll use these answers in the *gather* function:
+```{r}
+table4a %>% 
+  gather(`1999`, `2000`, key = "year", value = "cases")
+```
+> **Exercise 6a.** `table4b` contains information about the `population` variable. Let's *gather* that table as well. Type `table4b` to check it out before gathering. Your resulting table should have columns for `country`, `year`, and `population`.
+
+```{r}
+table4b #check it out
+
+table4b %>% 
+  gather(`1999`, `2000`, key = "year", value = "population")
+```
+Note that table4a contained our `cases` data while table4b contained our `population` data. Everything else is the same. Let's join those two tables together using `left_join`. (see http://r4ds.had.co.nz/relational-data.html for more about joining data frames).
+```{r}
+tidy4a <- table4a %>% 
+  gather(`1999`, `2000`, key = "year", value = "cases")
+
+tidy4b <- table4b %>% 
+  gather(`1999`, `2000`, key = "year", value = "population")
+
+left_join(tidy4a, tidy4b) #note that R tells you which columns were matched
+
+```
+## 7. Spreading Data
+In contrast to *gather*ing, sometimes a single observation is scattered across multiple rows. Then, you'd want to use *spread* (which is the opposite of *gather*). In table2, a single observation is a country in a year (`type` is not a variable they are interested in including in their analyses), but each observation is spread across two rows.
+
+*spread* makes long tables shorter and wider
+```{r}
+table2
+
+```
+Now, there are two questions we must answer:
+1. Which column contains the variable names (i.e., the *key* column)? A: `type`
+2. Which column contains the *values* (or the data from multiple variables)? A: `count`
+
+We'll use these answers in the *spread* function:
+```{r}
+table2 %>% 
+  spread(key = type, value = count)
+```
+> **Exercise 7a.** Let's play around with our ps_data. Make each `item` a unique variable. Use *spread* to reformat the data so that there is a unique column for each item. The values in each of the four `item` columns should indicate whether or not the subject got that particular item right or wrong (i.e., `correct` in ps_data). Hint: what is the *key*? What is the *value*? Do not save this as a new object.
+
+```{r}
+ps_data %>% 
+  spread(key = item, value = correct)
+```
+## 8. Graphing in ggplot2
+For this section we're going to use another dataset that is built into R. It is called `iris`. Let's start by making a scatter plot of the relationship between Sepal.Length and Petal.Length.
+
+Note: this is just the beginning! There are entire books on graphing in ggplot2! https://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/331924275X/ref=as_li_ss_tl?ie=UTF8&linkCode=sl1&tag=ggplot2-20&linkId=4b4de5146fdafd09b8035e8aa656f300
+
+```{r}
+?iris #first, let's learn about the dataset
+
+ggplot(data = iris) +
+  geom_point(mapping = aes(x = Sepal.Length, y = Petal.Length))
+
+#this is the ggplot version of:
+plot(iris$Sepal.Length, iris$Petal.Length)
+```
+Creation of a plot in ggplot2 begins with the function ggplot() which creates a coordinate system you can add data to. For example:
+```{r}
+ggplot(data = iris)
+```
+You then can add one or more layers to ggplot() to complete your graph. As above, we'll add a layer of points to our plot (creating a scatterplot). geom_point() is a *geom function*, each of which adds a different type of layer to a plot. Each *geom function* take a *mapping* argument that defines visual properties of the graph. 
+
+Template for graphing in ggplot2:
+
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+  
+```{r}
+ggplot(data = iris) +
+  geom_point(mapping = aes(x = Sepal.Length, y = Petal.Length))
+```
+Let's find out if the relationship between `Sepal.Length` & `Petal.Length` relates to the `Species` of iris. To visualize this, we are going to map `Species` to an *aesthetic* (or a visual property of one of the objects in our plot). Aesthetics include things like size, shape, or color of our points. Let's map the color of our points to the `Species` variable.
+```{r}
+ggplot(data = iris) +
+  geom_point(mapping = aes(x = Sepal.Length, y = Petal.Length, color = Species))
+
+#ggplot assigned each level of *color* to each unique value of `Species`. This is called *scaling*.
+```
+> **Exercise 8a.** Options for *aesthetics* include color, shape, size, and alpha. Create a scatter plot to visualize the relationship between `Sepal.Width` and `Petal.Width`. Add an aesthetic to visualize the effect of `Species`. Choose any aesthetic you'd like or play around with a few. What do they do? How might you use more than one aesthetic?
+
+```{r}
+ggplot(data = iris) +
+  geom_point(mapping = aes(x = Sepal.Width, y = Petal.Width, color = Species, alpha = Species, shape = Species))
+```
+
+> ProTip: We could also make separate graphs for each `Species` using `facet_wrap`. By passing a formula (data structure) to `facet_wrap`.
+
+Here's how:
+```{r}
+ggplot(data = iris) +
+  geom_point(mapping = aes(x = Sepal.Length, y = Petal.Length)) +
+  facet_wrap(~ Species)
+```
+Maybe we'd prefer a line graph instead of a scatterplot to describe the `iris` data. In this case, we'd use a different *geom* (e.g., point, line, smooth, boxplot, bar). 
+
+Let's make the same plot, using the smooth *geom* which fits a smoothed line to the data.
+```{r}
+ggplot(data = iris) +
+  geom_smooth(mapping = aes(x = Sepal.Length, y = Petal.Length))
+
+#loess is the default function for geom_smooth() 
+# from http://www.statisticshowto.com/lowess-smoothing/: LOWESS (Locally Weighted Scatterplot Smoothing), sometimes called LOESS (locally weighted smoothing), is a popular tool used in regression analysis that creates a smooth line through a timeplot or scatter plot to help you to see relationship between variables and foresee trends.
+```
+We can add aesthetics to help visualize the data:
+```{r}
+ggplot(data = iris) +
+  geom_smooth(mapping = aes(x = Sepal.Length, y = Petal.Length, linetype = Species))
+
+ggplot(data = iris) +
+  geom_smooth(mapping = aes(x = Sepal.Length, y = Petal.Length, linetype = Species, color = Species))
+```
+We can also layer multiple geoms in the same plot!
+```{r}
+ggplot(data = iris) +
+  geom_point(mapping = aes(x = Sepal.Length, y = Petal.Length)) +
+  geom_smooth(mapping = aes(x = Sepal.Length, y = Petal.Length))
+
+#we could also have used global mappings
+ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Petal.Length)) +
+  geom_point() +
+  geom_smooth()
+
+#finally, we can add an *aesthetic* to only one part of the graph
+ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Petal.Length)) +
+  geom_point(mapping = aes(color = Species)) +
+  geom_smooth()
+```
+> **Exercise 8b.** Plot the relationship between `Sepal.Width` and `Petal.Width`. As above, create lines overlaid on a scatter plot. For the points, use different colors for each `Species`. For the lines, use both different colors and line types for `Species`.
+
+```{r}
+#multiple possible answers, here's one:
+ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Petal.Length)) +
+  geom_point(mapping = aes(color = Species)) +
+  geom_smooth(mapping = aes(color = Species, linetype = Species))
+```
+Now let's try a bar plot. The bar chart below displays the total number of irises in the `iris` dataset, grouped by `Species`.
+```{r}
+ggplot(iris, aes(x = Species)) +
+  geom_bar()
+# not very interesting - it looks like there's an approximately equal number of irises for each species; note that geom_bar defaults to *count*. This would be more informative if we used another dataset that is built in to ggplot2 called `diamonds`.
+
+ggplot(diamonds, aes(x = cut)) +
+  geom_bar()
+#this data set contains information about diamonds, and there are different numbers of diamonds at each level of `cut`
+```
+Let's get a more interesting plot for our `iris` dataset. We can look at the avearge `Sepal.Length` for each `Species` of iris.
+
+First, we'll need to use the skills we've previously acquired to create a table of means that we'll then plot. We'll then use the argument stat = "identity" to map the mean value onto the y aesthetic.
+```{r}
+plot.data <- iris %>% 
+  group_by(Species) %>% 
+  summarise(mean = mean(Sepal.Length, na.rm=TRUE))
+
+ggplot(plot.data, aes(x=Species, y=mean)) +
+  geom_bar(stat="identity")
+
+#more options:
+ggplot(plot.data, aes(x=Species, y=mean, color=Species)) +
+  geom_bar(stat="identity")
+
+ggplot(plot.data, aes(x=Species, y=mean, fill=Species)) +
+  geom_bar(stat="identity")
+```
+> **Exercise 8c.** Now, let's make a plot for ps_data. We want to visualize the mean `correct` for each `item` across each level of `condition`. Make sure the color of the bars represents the different `item`s. Instead of putting both levels of `condition` on the same plot, create two separate plots, one for each `condition`. Hint: use what you've learned so far about grouping and summarising; see *facet_wrap* above for help separating plots by `condition`!
+
+```{r}
+plot.data <- ps_data %>% 
+  group_by(item, condition) %>% 
+  summarise(mean = mean(correct))
+
+ggplot(plot.data, aes(x = item, y = mean, fill = item)) +
+  geom_bar(stat = "identity") +
+  facet_wrap(~ condition)
+```
