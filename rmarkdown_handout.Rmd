@@ -1,6 +1,6 @@
 ---
 title: "RMarkdown for writing reproducible scientific papers"
-author: '[Jessica Kosie](mailto:jkosie@uoregon.edu), adapted from work by [Mike Frank](mailto:mcfrank@stanford.edu) and [Chris Hartgerink](mailto:chris@libscie.org)'
+author: 'Adapted from work by [Mike Frank](mailto:mcfrank@stanford.edu) and [Chris Hartgerink](mailto:chris@libscie.org)'
 date: '`r Sys.Date()`'
 output:
   tufte::tufte_html:
