@@ -1,7 +1,7 @@
 ---
 title: "Introduction to R"
 author: "Jessica Kosie"
-date: "9/20/2018"
+date: "9/21/2018"
 output: 
   html_document:
     toc: true
@@ -79,7 +79,7 @@ The verb `filter` can be used to remove *rows* from your dataset. You might do t
 So if you wanted to look only at 2 and 3 year olds.
 
 ```{r}
-ps_data_younger <- ps_data %>%
+ps_data %>%
   filter(age > 2, age < 3)
 ```
 ## 2. Selecting
@@ -102,28 +102,43 @@ head(ps_data)
 Sometimes you might want to **sort** your data by the values in a particular column. For this, you'll use the verb `arrange`. Let's arrange our data by the `correct` column.
 
 ```{r}
-
 ps_data %>% 
   arrange(age) 
 
+ps_data %>% 
+  arrange(desc(age))
 ```
 ## 5. Grouping and Summarising
 
 We typically describe datasets at the level of subjects, not trials. We need two verbs to get a summary at the level of subjects: `group_by` and `summarise` (kiwi spelling). 
 ```{r}
+#summarize without grouping
+ps_data %>%
+  summarise(correct_mean = mean(correct),
+            correct_sd = sd(correct),
+            n_observations = length(subid))
+
+#grouped by age_group and condition
 ps_data %>%
   group_by(age_group, condition) %>%
   summarise(correct_mean = mean(correct),
             correct_sd = sd(correct),
             n_observations = length(subid))
-
 ```
 
 > **Exercise 5a.** One of the most important analytic workflows for psychological data is to take some function (e.g., the mean) *for each participant* and then look at grand means and variability *across participant means*. This analytic workflow requires grouping, summarising, and then grouping again and summarising again! First, create a table called `ps_sub_means` to get the mean `correct` for each `subid`. Hint: in addition to `subid`, group by `age_group` and `condition` in this summary to transfer those values to `ps_sub_means` (we'll use them in our next step). Next, create a table called `ps_means` where you use `ps_sub_means` as your data file and calculate the mean `correct` across `age_group` and `condition`.  
 
 ```{r}
+ps_sub_means <- ps_data %>%
+  group_by(age_group, condition, subid) %>%
+  summarise(correct_mean = mean(correct), 
+            n_observations = length(subid))
 
-
+ps_means <- ps_sub_means %>%
+  group_by(age_group, condition) %>%
+  summarise(correct_sd = sd(correct_mean),
+            correct_cond_mean = mean(correct_mean),
+            n_subs = length(subid))
 ```
 ## NEW CONTENT:
 
