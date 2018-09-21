@@ -142,7 +142,7 @@ ps_means <- ps_sub_means %>%
 ```
 ## NEW CONTENT:
 
-## 9. Data tidying
+## Data tidying
 Credit: http://r4ds.had.co.nz/tidy-data.html#tidy-data-1
 
 The two key verbs in **data tidying** are `spread` and `gather`. Each of these verbs relies on a key value pair that contains a *key* that indicates *what* the information describes and a *value* that contains the actual information.
@@ -159,7 +159,7 @@ Recall the "rules" for tidy data:
 ?table1 #let's learn about the datset
 table1 #this dataset is tidy!
 ```
-## 9. Gathering & Joining Data
+## 6. Gathering & Joining Data
 A common problem is a dataset where some column names are not names of variables, but *values* of a variable. Check out `table4a`. The column names `1999` and `2000` are not variables in our data, instead they represent values of the `year` variable, and each row represents two observations, not one. We need to *gather* these columns into a new pair of variables.
 
 *gather* makes wide tables narrower and longer
@@ -177,7 +177,7 @@ table4a %>%
   gather(`1999`, `2000`, key = "year", value = "cases")
 
 ```
-> **Exercise 9a.** `table4b` contains information about the `population` variable. Let's *gather* that table as well. Type `table4b` to check it out before gathering. Your resulting table should have columns for `country`, `year`, and `population`.
+> **Exercise 6a.** `table4b` contains information about the `population` variable. Let's *gather* that table as well. Type `table4b` to check it out before gathering. Your resulting table should have columns for `country`, `year`, and `population`.
 
 ```{r}
 table4b #check it out
@@ -195,7 +195,7 @@ tidy4b <- table4b %>%
 left_join(tidy4a, tidy4b) #note that R tells you which columns were matched
 
 ```
-## 10. Spreading Data
+## 7. Spreading Data
 In contrast to *gather*ing, sometimes a single observation is scattered across multiple rows. Then, you'd want to use *spread* (which is the opposite of *gather*). In table2, a single observation is a country in a year (`type` is not a variable they are interested in including in their analyses), but each observation is spread across two rows.
 
 *spread* makes long tables shorter and wider
@@ -212,13 +212,13 @@ We'll use these answers in the *spread* function:
 table2 %>% 
   spread(key = type, value = count)
 ```
-> **Exercise 10a.** Let's play around with our ps_data. Make each `item` a unique variable. Use *spread* to reformat the data so that there is a unique column for each item. The values in each of the four `item` columns should indicate whether or not the subject got that particular item right or wrong (i.e., `correct` in ps_data). Hint: what is the *key*? What is the *value*? Do not save this as a new object.
+> **Exercise 7a.** Let's play around with our ps_data. Make each `item` a unique variable. Use *spread* to reformat the data so that there is a unique column for each item. The values in each of the four `item` columns should indicate whether or not the subject got that particular item right or wrong (i.e., `correct` in ps_data). Hint: what is the *key*? What is the *value*? Do not save this as a new object.
 
 ```{r}
 
 
 ```
-## 11. Graphing in ggplot2
+## 8. Graphing in ggplot2
 For this section we're going to use another dataset that is built into R. It is called `iris`. Let's start by making a scatter plot of the relationship between Sepal.Length and Petal.Length.
 
 Note: this is just the beginning! There are entire books on graphing in ggplot2! https://www.amazon.com/ggplot2-Elegant-Graphics-Data-Analysis/dp/331924275X/ref=as_li_ss_tl?ie=UTF8&linkCode=sl1&tag=ggplot2-20&linkId=4b4de5146fdafd09b8035e8aa656f300
@@ -254,7 +254,7 @@ ggplot(data = iris) +
 
 #ggplot assigned each level of *color* to each unique value of `Species`. This is called *scaling*.
 ```
-> **Exercise 11a.** Options for *aesthetics* include color, shape, size, and alpha. Create a scatter plot to visualize the relationship between `Sepal.Width` and `Petal.Width`. Add an aesthetic to visualize the effect of `Species`. Choose any aesthetic you'd like or play around with a few. What do they do? How might you use more than one aesthetic?
+> **Exercise 8a.** Options for *aesthetics* include color, shape, size, and alpha. Create a scatter plot to visualize the relationship between `Sepal.Width` and `Petal.Width`. Add an aesthetic to visualize the effect of `Species`. Choose any aesthetic you'd like or play around with a few. What do they do? How might you use more than one aesthetic?
 
 ```{r}
 
@@ -303,7 +303,7 @@ ggplot(data = iris, mapping = aes(x = Sepal.Length, y = Petal.Length)) +
   geom_point(mapping = aes(color = Species)) +
   geom_smooth()
 ```
-> **Exercise 11b.** Plot the relationship between `Sepal.Width` and `Petal.Width`. As above, create lines overlaid on a scatter plot. For the points, use different colors for each `Species`. For the lines, use both different colors and line types for `Species`.
+> **Exercise 8b.** Plot the relationship between `Sepal.Width` and `Petal.Width`. As above, create lines overlaid on a scatter plot. For the points, use different colors for each `Species`. For the lines, use both different colors and line types for `Species`.
 
 ```{r}
 
@@ -337,7 +337,7 @@ ggplot(plot.data, aes(x=Species, y=mean, color=Species)) +
 ggplot(plot.data, aes(x=Species, y=mean, fill=Species)) +
   geom_bar(stat="identity")
 ```
-> **Exercise 11c.** Now, let's make a plot for ps_data. We want to visualize the mean `correct` for each `item` across each level of `condition`. Make sure the color of the bars represents the different `item`s. Instead of putting both levels of `condition` on the same plot, create two separate plots, one for each `condition`. Hint: use what you've learned so far about grouping and summarising; see *facet_wrap* above for help separating plots by `condition`!
+> **Exercise 8c.** Now, let's make a plot for ps_data. We want to visualize the mean `correct` for each `item` across each level of `condition`. Make sure the color of the bars represents the different `item`s. Instead of putting both levels of `condition` on the same plot, create two separate plots, one for each `condition`. Hint: use what you've learned so far about grouping and summarising; see *facet_wrap* above for help separating plots by `condition`!
 
 ```{r}
 
