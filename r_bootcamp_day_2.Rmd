@@ -16,7 +16,6 @@ By the end of this tutorial, you will know:
 + How to get values out of the rows and columns in your data
 + What a pipe is and how to use pipes to chain together `tidyverse` verbs
 + Using tidyverse "verbs" to modifiy and summarise data
-+ Intro to plotting in ggplot2 
 
 
 The best way to do this tutorial is to walk through it slowly, executing each line and trying to understand what it does. You can execute a single line by placing your cursor somewhere in that line and hitting CMD+enter (again on a mac) and execute a whole chunk at a time by hitting CMD+option+C (on a mac). 
