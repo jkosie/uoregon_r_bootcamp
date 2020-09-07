@@ -29,7 +29,7 @@ R for Data Science (see *Hadley Wickham* above)
 
 [DataCamp](https://www.datacamp.com/)
 
-[YaRrr! The Pirate's Guide to R](http://nathanieldphillips.com/thepiratesguidetor/)
+[YaRrr! The Pirate's Guide to R](https://bookdown.org/ndphillips/YaRrr/)
 
 [R for Cats!](https://rforcats.net/)
 
